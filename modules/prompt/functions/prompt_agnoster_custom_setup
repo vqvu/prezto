@@ -248,8 +248,10 @@ prompt_agnoster_custom_precmd() {
 
 prompt_agnoster_custom_setup() {
   autoload -Uz add-zsh-hook
-
   prompt_opts=(cr subst percent)
+
+  # Set editor-info parameters.
+  zstyle ':prezto:module:editor:info:completing' format '%F{green}...%f'
 
   add-zsh-hook precmd prompt_agnoster_custom_precmd
 }
