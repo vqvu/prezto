@@ -48,6 +48,9 @@ CURRENT_BG='NONE'
   # escape sequence with a single literal character.
   # Do not change this! Do not make it '\u2b80'; that is the old, wrong code point.
   SEGMENT_SEPARATOR=$'\ue0b0'
+  SYM_COMMAND_EXEC_ERROR=$'\u2717' # BALLOT X
+  SYM_IS_ROOT=$'\u26a1' # HIGH VOLTAGE SIGN
+  SYM_HAS_BG_JOB=$'\u2699' # GEAR
 }
 
 # Begin a segment
@@ -185,9 +188,9 @@ prompt_agnoster_custom_virtualenv() {
 prompt_agnoster_custom_status() {
   local symbols
   symbols=()
-  [[ $RETVAL -ne 0 ]] && symbols+="%{%F{red}%}✘"
-  [[ $UID -eq 0 ]] && symbols+="%{%F{yellow}%}⚡"
-  [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+="%{%F{cyan}%}⚙"
+  [[ $RETVAL -ne 0 ]] && symbols+="%{%F{red}%}$SYM_COMMAND_EXEC_ERROR"
+  [[ $UID -eq 0 ]] && symbols+="%{%F{yellow}%}$SYM_IS_ROOT"
+  [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+="%{%F{cyan}%}$SYM_HAS_BG_JOB"
 
   [[ -n "$symbols" ]] && prompt_agnoster_custom_segment black default "$symbols"
 }
