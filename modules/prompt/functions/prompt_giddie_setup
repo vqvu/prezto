@@ -22,17 +22,34 @@ function +vi-set_vcs_prompt_symbol {
   _prompt_giddie_symbol='±'
 }
 
-function +vi-git_precmd {
+function +vi-configure_git_vcs_info {
+  local unstaged
+  unstaged=
   # Check for untracked files, since vcs_info does not.
   if [[ -n $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
-    hook_com[unstaged]+='%F{green}?%f'
+    unstaged='?'
   fi
+
+  # Set vcs_info parameters.
+  zstyle ':vcs_info:*' check-for-changes true
+  zstyle ':vcs_info:*' formats ' on %F{magenta}%b%f%c%u'
+  zstyle ':vcs_info:*' actionformats ' on %F{magenta}%b%f%c%u %F{yellow}(%a)%f'
+  zstyle ':vcs_info:*' stagedstr '%F{green}+%f'
+  zstyle ':vcs_info:*' unstagedstr '%F{green}'"${unstaged}"'!%f'
 }
 
 function prompt_giddie_precmd {
   # Replace '/home/<user>' with '~'.
   _prompt_giddie_pwd="${PWD/#$HOME/~}"
+  +vi-configure_git_vcs_info
   vcs_info
+
+  # Define prompts.
+  PROMPT='%(?..%F{red}%B-> [%?]%b%f
+)%F{magenta}%n%f@%F{yellow}%m%f|%F{green}${_prompt_giddie_pwd}%f${vcs_info_msg_0_}
+%F{blue}${_prompt_giddie_symbol}%f '
+  RPROMPT='${editor_info[keymap]}'
+  SPROMPT='zsh: correct %F{magenta}%R%f to %F{green}%r%f [nyae]? '
 }
 
 function prompt_giddie_setup {
@@ -51,26 +68,12 @@ function prompt_giddie_setup {
   zstyle ':prezto:module:editor:info:completing' format '%F{green}...%f'
   zstyle ':prezto:module:editor:info:keymap:alternate' format '%F{yellow}--- COMMAND ---%f'
 
-  # Set vcs_info parameters.
-  zstyle ':vcs_info:*' check-for-changes true
-  zstyle ':vcs_info:*' formats ' on %F{magenta}%b%f%c%u'
-  zstyle ':vcs_info:*' actionformats ' on %F{magenta}%b%f%c%u %F{yellow}(%a)%f'
-  zstyle ':vcs_info:*' stagedstr '%F{green}+%f'
-  zstyle ':vcs_info:*' unstagedstr '%F{green}!%f'
-
   # Set vcs_info hooks.
   # NOTE: Prior to Zsh v4.3.12, there are no static hooks, no vcs_info_hookadd
   #       function, and no 'no-vcs' hook.
   zstyle ':vcs_info:*+start-up:*' hooks set_novcs_prompt_symbol
-  zstyle ':vcs_info:git*+set-message:*' hooks set_vcs_prompt_symbol git_precmd
+  zstyle ':vcs_info:git*+set-message:*' hooks set_vcs_prompt_symbol
   zstyle ':vcs_info:*+set-message:*' hooks set_vcs_prompt_symbol
-
-  # Define prompts.
-  PROMPT='%(?..%F{red}%B-> [%?]%b%f
-)%F{magenta}%n%f@%F{yellow}%m%f|%F{green}${_prompt_giddie_pwd}%f${vcs_info_msg_0_}
-%F{blue}${_prompt_giddie_symbol}%f '
-  RPROMPT='${editor_info[keymap]}'
-  SPROMPT='zsh: correct %F{magenta}%R%f to %F{green}%r%f [nyae]? '
 }
 
 prompt_giddie_setup "$@"
