@@ -34,6 +34,13 @@ if (( ! $+commands[python] && ! $+commands[pyenv] )); then
   return 1
 fi
 
+# Load virtualenv-init if it is installed.
+if (( $+commands[pyenv] )); then
+  if pyenv commands | grep -qE '^virtualenv-init$'; then
+      eval "$(pyenv virtualenv-init -)"
+  fi
+fi
+
 # Load virtualenvwrapper into the shell session.
 if (( $+commands[virtualenvwrapper.sh] )); then
   # Set the directory where virtual environments are stored.
